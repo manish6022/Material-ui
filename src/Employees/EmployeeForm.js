@@ -16,21 +16,48 @@ const genderItems = [
 
 const initialFValues = {
     id:0,
-    fullName:'',
-    email:'',
-    mobile:'',
+    fullName:"",
+    email:"",
+    mobile:"",
     city:'',
     gender:'female',
-    departmentId:'',
+    departmentId:"",
     hireDate:new Date(),
     isPermanent:false,
 }
 
-function EmployeeForm() {
 
-   const{values,handleInputChange}= UseForm(initialFValues);
+function EmployeeForm() {
+  const{values,
+    setValues,
+    errors,
+    setErrors,
+    handleInputChange}= UseForm(initialFValues);
+  
+  const validate = () =>{
+    let temp = {};
+    temp.fullName=values.fullName?"":"This Field is required"
+    temp.email=(/$^|.+@.+..+/).test(values.email)?"":"Email is not valid!"
+    temp.mobile=values.mobile.length > 9 ? "" :"Minimum 10 Digits required!"
+    temp.city=values.city?"":"This Field is required"
+    temp.departmentId=values.departmentId.length !== 0 ?"":"This Field is required"
+    setErrors({
+      ...temp
+    })
+
+    return Object.values(temp).every(x=> x=== "")
+
+  }
+  const handleSubmit = (event)=>{
+    event.preventDefault();
+    if (validate()) 
+      window.alert('testing')
+ 
+    
+  }
+
     return (
-          <Form>
+          <Form onSubmit={handleSubmit}>
             <Grid container>
               <Grid item xs={6}>
                  <Controls.Input
@@ -38,28 +65,27 @@ function EmployeeForm() {
                  label='Full Name'
                  value={values.fullName}
                  onChange={handleInputChange}
-                 type='text'
+                 error={errors.fullName}
                  />
                   <Controls.Input
                     label="E-Mail"
                     name='email'
                     value={values.email}
                     onChange={handleInputChange}
-                    type='email'     
+                    error={errors.email}
                   />
                   <Controls.Input
                  name='mobile'
                  label='Mobile No'
                  value={values.mobile}
                  onChange={handleInputChange}
-                 type='tel'
+                 error={errors.mobile}
                  />
                  <Controls.Input
                  name='city'
                  label='City'
                  value={values.city}
                  onChange={handleInputChange}
-                 type='text'
                  />
               </Grid>
 
@@ -77,6 +103,7 @@ function EmployeeForm() {
                 value={values.departmentId}
                 onChange={handleInputChange}
                 options={empService.getDepatmentCollection()}
+                error={errors.departmentId}
                 />
                 <Controls.CheckGroup 
                 label='Is Permanent ?'
