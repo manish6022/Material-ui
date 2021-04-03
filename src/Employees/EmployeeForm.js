@@ -28,27 +28,36 @@ const initialFValues = {
 
 
 function EmployeeForm() {
+
+    const validate = (fieldValues = values) =>{
+    let temp = {...errors};
+    if('fullName' in fieldValues)
+      temp.fullName=fieldValues.fullName?"":"This Field is required"
+    if('email' in fieldValues)
+      temp.email=(/$^|\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/).test(fieldValues.email)?"":"Email is not valid!"
+    if('mobile' in fieldValues)
+      temp.mobile=fieldValues.mobile.length > 9 ? "" :"Minimum 10 Digits required!"    
+    if('city' in fieldValues)
+      temp.city=fieldValues.city?"":"This Field is required"
+    if('departmentId' in fieldValues)
+      temp.departmentId=fieldValues.departmentId.length !== 0 ?"":"This Field is required"
+    setErrors({
+      ...temp
+    })
+    if(fieldValues === values)
+    return Object.values(temp).every(x=> x=== "")
+
+  }
+
+
   const{values,
     setValues,
     errors,
     setErrors,
     resetForm,
-    handleInputChange}= UseForm(initialFValues);
+    handleInputChange}= UseForm(initialFValues,true,validate);
   
-  const validate = () =>{
-    let temp = {};
-    temp.fullName=values.fullName?"":"This Field is required"
-    temp.email=(/$^|.+@.+..+/).test(values.email)?"":"Email is not valid!"
-    temp.mobile=values.mobile.length > 9 ? "" :"Minimum 10 Digits required!"
-    temp.city=values.city?"":"This Field is required"
-    temp.departmentId=values.departmentId.length !== 0 ?"":"This Field is required"
-    setErrors({
-      ...temp
-    })
-
-    return Object.values(temp).every(x=> x=== "")
-
-  }
+  
   const handleSubmit = (event)=>{
     event.preventDefault();
     if (validate()) 
@@ -87,6 +96,7 @@ function EmployeeForm() {
                  label='City'
                  value={values.city}
                  onChange={handleInputChange}
+                 error={errors.city}
                  />
               </Grid>
 
