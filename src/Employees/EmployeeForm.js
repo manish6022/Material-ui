@@ -20,7 +20,7 @@ const initialFValues = {
     email:"",
     mobile:"",
     city:'',
-    gender:'female',
+    gender:'male',
     departmentId:"",
     hireDate:new Date(),
     isPermanent:false,
@@ -32,6 +32,7 @@ function EmployeeForm() {
     setValues,
     errors,
     setErrors,
+    resetForm,
     handleInputChange}= UseForm(initialFValues);
   
   const validate = () =>{
@@ -127,6 +128,7 @@ function EmployeeForm() {
       <Controls.Button
       color="default"
       text='Reset'
+      onClick={resetForm}
       startIcon={<RotateLeftIcon />}      
       />
     </div>
