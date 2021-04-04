@@ -2,10 +2,12 @@ import React from 'react'
 import EmployeeForm from './EmployeeForm';
 import PageHeader from '../components/PageHeader'
 import PeopleAltTwoToneIcon from '@material-ui/icons/PeopleAltTwoTone';
-import { makeStyles, Paper, TableBody, TableCell, TableRow } from '@material-ui/core';
+import { InputAdornment, makeStyles, Paper, TableBody, TableCell, TableRow, Toolbar } from '@material-ui/core';
 import UseTable from '../components/UseTable';
 import * as empService from "../Services/EmployeeService";
 import { useState } from 'react';
+import Controls from '../components/controls/Controls'
+import SearchIcon from '@material-ui/icons/Search';
 
 const headCells = [
   {id:'fullName',label:'Employee Name'},
@@ -18,6 +20,12 @@ const useStyles = makeStyles(theme =>({
     pageContent:{
       margin:theme.spacing(5),
       padding: theme.spacing(3)
+    },
+    SearchEmpInput:{
+        width:"75%",
+        '& .MuiInputBase-input':{
+          height:'2rem'
+        }
     }
 }))
 
@@ -25,9 +33,21 @@ const useStyles = makeStyles(theme =>({
 function Employees() {
   const classes = useStyles();
   const [records,setRecords]=useState(empService.getAllEmployees())
+  const [filterFn, setFilterFn] = useState({fn:items => {return items}})
 
-  const{TblContainer,TblHead,TblPagination,recordsAfterPagingAndSorting}=UseTable(records,headCells);
+  const{TblContainer,TblHead,TblPagination,recordsAfterPagingAndSorting}=UseTable(records,headCells,filterFn);
 
+  const handleSearch = event =>{
+    let target = event.target
+    setFilterFn({
+       fn:items => {
+         if(target.value === '')
+         return items;
+         else
+         return items.filter(x => x.fullName.toLowerCase().includes(target.value))
+       }
+    })
+  }
     return (
         <>
         <PageHeader 
@@ -37,6 +57,18 @@ function Employees() {
         />
         <Paper className={classes.pageContent}>
         {/* <EmployeeForm /> */}
+        <Toolbar >
+          <Controls.Input
+          label='Search Employee'
+          className={classes.SearchEmpInput}
+          InputProps={{ startAdornment:(
+            <InputAdornment position="start">
+                <SearchIcon />
+            </InputAdornment>
+          )}}
+         onChange={handleSearch}
+          />
+        </Toolbar>
         <TblContainer>
           <TblHead/>
             <TableBody>
