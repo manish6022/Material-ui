@@ -12,7 +12,8 @@ import PersonAddTwoToneIcon from '@material-ui/icons/PersonAddTwoTone';
 import Popup from '../components/Popup'
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import EditIcon from '@material-ui/icons/Edit';
-
+import Notification from '../components/Notification';
+import ConfirmDialog from '../components/ConfirmDialog'
 const headCells = [
   {id:'fullName',label:'Employee Name'},
   {id:'email',label:'Email Address (Personal)'},
@@ -41,16 +42,30 @@ const useStyles = makeStyles(theme =>({
       padding:theme.spacing(2),
       position:'absolute',
       top:theme.spacing(5)
+  },
+  dialogContent:{
+    textAlign:'center'
+  },
+  dialogAction:{
+    justifyContent:'center'
   }
 }))
 
 
 function Employees() {
   const classes = useStyles();
+
+
+
+  const [notify,setNotify] = useState({isOpen:false,message:'',type:''})
   const [records,setRecords]=useState(empService.getAllEmployees())
   const [filterFn, setFilterFn] = useState({fn:items => {return items}})
   const [openPopup, setOpenPopup] = useState(false)
   const [recordsForEdit, setRecordsForEdit] = useState(null)
+  const [confirmDialog, setConfirmDialog] = useState({isOpen:false,title:'',subTitle:'',dialogActionStyle:'',dialogContentStyle:''})
+
+
+
   const{TblContainer,TblHead,TblPagination,recordsAfterPagingAndSorting}=UseTable(records,headCells,filterFn);
 
   const handleSearch = event =>{
@@ -73,19 +88,39 @@ function Employees() {
       empService.updateEmployee(employee)
     }
     resetForm()
+    setRecordsForEdit(null)
     setOpenPopup(false)
     setRecords(empService.getAllEmployees())
+    setNotify({
+      isOpen:true,
+      message:'Submitted Successfully',
+      type:'success'
+    })
   }
 
   const openInPopUp = (item) =>{
       setRecordsForEdit(item)
       setOpenPopup(true)
   }
+
+  const onDelete = (id) => {
+    setConfirmDialog({
+      ...confirmDialog,
+      isOpen:false
+    })
+    empService.deleteEmployee(id)
+    setRecords(empService.getAllEmployees())
+    setNotify({
+      isOpen:true,
+      message:'Deleted Successfully',
+      type:'error'
+    })
+  }
     return (
         <>
         <PageHeader 
-        title='Page header'
-        subTitle='page subtitle'
+        title='Employee Data'
+        subTitle='A contact book for your Employee'
         icon={<PeopleAltTwoToneIcon fontSize='large'/>}
         />
         <Paper className={classes.pageContent}>
@@ -105,7 +140,8 @@ function Employees() {
           text='Add Employee'
           color='secondary'
           startIcon={<PersonAddTwoToneIcon/>}
-          onClick={()=>setOpenPopup(true)}
+          onClick={()=>{setOpenPopup(true); setRecordsForEdit(null)
+          }}
           />
         </Toolbar>
         
@@ -129,7 +165,17 @@ function Employees() {
                       </Controls.ActionBtn>
                       <Controls.ActionBtn 
                       color='secondary'>
-                        <DeleteForeverIcon/>
+                        <DeleteForeverIcon
+                        onClick={()=>{
+                          setConfirmDialog({
+                            isOpen:true,
+                            title:'Are you sure to delete this record?',
+                            subTitle:"you cannot undo this operation",
+                            onConfirm:()=>{onDelete(record.id)}
+                          })
+                      
+                        }}
+                        />
                       </Controls.ActionBtn>
                     </TableCell>
                 </TableRow>
@@ -153,6 +199,16 @@ function Employees() {
         addOrEdit={addOrEdit}
         />
         </Popup>
+        <Notification
+        notify={notify}
+        setNotify={setNotify}
+
+        />
+        <ConfirmDialog
+            confirmDialog={confirmDialog}
+            setConfirmDialog={setConfirmDialog}
+            TransitionComponent={Transition}
+        />
         </>
     )
 }
