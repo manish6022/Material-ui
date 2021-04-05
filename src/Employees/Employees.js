@@ -2,19 +2,29 @@ import React from 'react'
 import EmployeeForm from './EmployeeForm';
 import PageHeader from '../components/PageHeader'
 import PeopleAltTwoToneIcon from '@material-ui/icons/PeopleAltTwoTone';
-import { InputAdornment, makeStyles, Paper, TableBody, TableCell, TableRow, Toolbar } from '@material-ui/core';
+import { InputAdornment, makeStyles, Paper, Slide, TableBody, TableCell, TableRow, Toolbar } from '@material-ui/core';
 import UseTable from '../components/UseTable';
 import * as empService from "../Services/EmployeeService";
 import { useState } from 'react';
 import Controls from '../components/controls/Controls'
 import SearchIcon from '@material-ui/icons/Search';
+import PersonAddTwoToneIcon from '@material-ui/icons/PersonAddTwoTone';
+import Popup from '../components/Popup'
+import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
+import EditIcon from '@material-ui/icons/Edit';
 
 const headCells = [
   {id:'fullName',label:'Employee Name'},
   {id:'email',label:'Email Address (Personal)'},
   {id:'mobile',label:'Mobile Number'},
-  {id:'department',label:'Department',disableSorting:true},
+  {id:'department',label:'Department'},
+  {id:'actions',label:'Actions',disableSorting:true}
 ]
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
 
 const useStyles = makeStyles(theme =>({
     pageContent:{
@@ -26,7 +36,12 @@ const useStyles = makeStyles(theme =>({
         '& .MuiInputBase-input':{
           height:'2rem'
         }
-    }
+    },
+    dialogWrapup:{
+      padding:theme.spacing(2),
+      position:'absolute',
+      top:theme.spacing(5)
+  }
 }))
 
 
@@ -34,7 +49,8 @@ function Employees() {
   const classes = useStyles();
   const [records,setRecords]=useState(empService.getAllEmployees())
   const [filterFn, setFilterFn] = useState({fn:items => {return items}})
-
+  const [openPopup, setOpenPopup] = useState(false)
+  const [recordsForEdit, setRecordsForEdit] = useState(null)
   const{TblContainer,TblHead,TblPagination,recordsAfterPagingAndSorting}=UseTable(records,headCells,filterFn);
 
   const handleSearch = event =>{
@@ -48,6 +64,23 @@ function Employees() {
        }
     })
   }
+
+
+  const addOrEdit = (employee,resetForm) =>{
+    if(employee.id == 0){
+      empService.insertEmployee(employee)
+    }else{
+      empService.updateEmployee(employee)
+    }
+    resetForm()
+    setOpenPopup(false)
+    setRecords(empService.getAllEmployees())
+  }
+
+  const openInPopUp = (item) =>{
+      setRecordsForEdit(item)
+      setOpenPopup(true)
+  }
     return (
         <>
         <PageHeader 
@@ -56,7 +89,6 @@ function Employees() {
         icon={<PeopleAltTwoToneIcon fontSize='large'/>}
         />
         <Paper className={classes.pageContent}>
-        {/* <EmployeeForm /> */}
         <Toolbar >
           <Controls.Input
           label='Search Employee'
@@ -68,7 +100,15 @@ function Employees() {
           )}}
          onChange={handleSearch}
           />
+         <Controls.Button
+          variant='outlined'
+          text='Add Employee'
+          color='secondary'
+          startIcon={<PersonAddTwoToneIcon/>}
+          onClick={()=>setOpenPopup(true)}
+          />
         </Toolbar>
+        
         <TblContainer>
           <TblHead/>
             <TableBody>
@@ -79,6 +119,19 @@ function Employees() {
                     <TableCell>{record.email}</TableCell>
                     <TableCell>{record.mobile}</TableCell>
                     <TableCell>{record.department}</TableCell>
+                    <TableCell>
+                      <Controls.ActionBtn 
+                      color='primary'
+                      >
+                        <EditIcon
+                        onClick={()=>{openInPopUp(record)}}
+                        />
+                      </Controls.ActionBtn>
+                      <Controls.ActionBtn 
+                      color='secondary'>
+                        <DeleteForeverIcon/>
+                      </Controls.ActionBtn>
+                    </TableCell>
                 </TableRow>
               ))
             }
@@ -86,6 +139,20 @@ function Employees() {
         </TblContainer>
         <TblPagination/>
         </Paper>
+        <Popup 
+        title='Employee Form'
+        openPopup={openPopup}
+        setOpenPopup={setOpenPopup}
+        TransitionComponent={Transition}
+        dividers={true}
+        maxWidth='md'
+        classes={{paper:classes.dialogWrapup}}
+        >
+        <EmployeeForm 
+        recordsForEdit={recordsForEdit}
+        addOrEdit={addOrEdit}
+        />
+        </Popup>
         </>
     )
 }
