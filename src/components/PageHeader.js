@@ -10,7 +10,7 @@ const useStyle = makeStyles(theme => ({
     },
     pageHeader:{
         display:"flex",
-        padding: theme.spacing(4),
+        padding:`${theme.spacing(4)}px ${theme.spacing(30)}px`,
         marginBottom: theme.spacing(3)
     },
     pageIcon:{

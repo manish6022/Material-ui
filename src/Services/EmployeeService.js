@@ -1,13 +1,13 @@
-const KEYS={
-    employees:'employees',
-    employeeId:'employeeId'
+const KEYS = {
+    employees: 'employees',
+    employeeId: 'employeeId'
 }
 
-export const getDepatmentCollection = () => ([
-{id:'1', title: 'Development'},
-{id:'2', title: 'Marketing'},
-{id:'3', title: 'Accounting'},
-{id:'4', title: 'HR'}
+export const getDepartmentCollection = () => ([
+    { id: '1', title: 'Development' },
+    { id: '2', title: 'Marketing' },
+    { id: '3', title: 'Accounting' },
+    { id: '4', title: 'HR' },
 ])
 
 export function insertEmployee(data){
@@ -20,7 +20,7 @@ export function insertEmployee(data){
 
 export function updateEmployee(data){
     let employees = getAllEmployees();
-    let recordIndex = employees.findIndex(x => x.id == data.id);
+    let recordIndex = employees.findIndex(x => x.id === data.id);
     employees[recordIndex]= {...data}
     localStorage.setItem(KEYS.employees, JSON.stringify(employees))
 }
@@ -40,17 +40,15 @@ export function generateEmployeeId(){
 }
 
 export function getAllEmployees(){
-    if(localStorage.getItem(KEYS.employees)==null){
+    if(localStorage.getItem(KEYS.employees)==null)
         localStorage.setItem(KEYS.employees,JSON.stringify([]))
-    }
-        
+   
    let employees= JSON.parse(localStorage.getItem(KEYS.employees));
    //map departmentId TO DEPARTMENT title
-   let departments = getDepatmentCollection();
+   let departments = getDepartmentCollection();
 
    return employees.map(x => ({
        ...x,
        department:departments[x.departmentId-1].title
    }))
 }
-

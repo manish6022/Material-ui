@@ -2,7 +2,7 @@ import React from 'react'
 import EmployeeForm from './EmployeeForm';
 import PageHeader from '../components/PageHeader'
 import PeopleAltTwoToneIcon from '@material-ui/icons/PeopleAltTwoTone';
-import { InputAdornment, makeStyles, Paper, Slide, TableBody, TableCell, TableRow, Toolbar } from '@material-ui/core';
+import { InputAdornment, makeStyles, Paper, Slide, TableBody, TableCell, TableRow, Toolbar, Grid } from '@material-ui/core';
 import UseTable from '../components/UseTable';
 import * as empService from "../Services/EmployeeService";
 import { useState } from 'react';
@@ -33,7 +33,7 @@ const useStyles = makeStyles(theme =>({
       padding: theme.spacing(3)
     },
     SearchEmpInput:{
-        width:"75%",
+        width:"100%",
         '& .MuiInputBase-input':{
           height:'2rem'
         }
@@ -82,7 +82,7 @@ function Employees() {
 
 
   const addOrEdit = (employee,resetForm) =>{
-    if(employee.id == 0){
+    if(employee.id === 0){
       empService.insertEmployee(employee)
     }else{
       empService.updateEmployee(employee)
@@ -123,8 +123,19 @@ function Employees() {
         subTitle='A contact book for your Employee'
         icon={<PeopleAltTwoToneIcon fontSize='large'/>}
         />
+
+        <Grid container justify='center'>
+
+        <Grid item md={1}>
+
+          </Grid>
+
+         <Grid item md={10}>
         <Paper className={classes.pageContent}>
+          
         <Toolbar >
+        <Grid container>
+            <Grid item md={7}>
           <Controls.Input
           label='Search Employee'
           className={classes.SearchEmpInput}
@@ -135,6 +146,14 @@ function Employees() {
           )}}
          onChange={handleSearch}
           />
+          </Grid>
+          <Grid item md={3}>
+
+          </Grid>
+          <Grid item md={2}>
+            
+          
+
          <Controls.Button
           variant='outlined'
           text='Add Employee'
@@ -143,7 +162,10 @@ function Employees() {
           onClick={()=>{setOpenPopup(true); setRecordsForEdit(null)
           }}
           />
+          </Grid>
+           </Grid>
         </Toolbar>
+       
         
         <TblContainer>
           <TblHead/>
@@ -185,6 +207,13 @@ function Employees() {
         </TblContainer>
         <TblPagination/>
         </Paper>
+        </Grid>
+        
+<Grid item md={1}>
+
+</Grid>
+        </Grid>
+
         <Popup 
         title='Employee Form'
         openPopup={openPopup}

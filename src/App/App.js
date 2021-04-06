@@ -1,5 +1,5 @@
-import { createMuiTheme, makeStyles, ThemeProvider } from '@material-ui/core';
-import SideMenu from '../components/SideMenu';
+import { createMuiTheme, makeStyles, ThemeProvider} from '@material-ui/core';
+// import SideMenu from '../components/SideMenu';
 import './App.css';
 import Header from '../components/Header'
 import CssBaseline from '@material-ui/core/CssBaseline/CssBaseline'
@@ -32,7 +32,6 @@ const theme = createMuiTheme({
 
 const useStyles = makeStyles({
   appMain:{
-    paddingLeft:'320px',
     width:'100%'
   }
 })
@@ -41,10 +40,13 @@ function App() {
   const classes = useStyles();
   return (
     <ThemeProvider theme={theme} >
-    <SideMenu/>
+    {/* <SideMenu/> */}
     <div className={classes.appMain}>
+      
       <Header />
       <Employees/>
+
+     
     </div>
     <CssBaseline />
     </ThemeProvider>

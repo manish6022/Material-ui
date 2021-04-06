@@ -16,15 +16,15 @@ const genderItems = [
 
 
 const initialFValues = {
-    id:0,
-    fullName:"",
-    email:"",
-    mobile:"",
-    city:'',
-    gender:'male',
-    departmentId:"",
-    hireDate:new Date(),
-    isPermanent:false,
+  id: 0,
+  fullName: '',
+  email: '',
+  mobile: '',
+  city: '',
+  gender: 'male',
+  departmentId: '',
+  hireDate: new Date(),
+  isPermanent: false,
 }
 
 
@@ -52,7 +52,7 @@ function EmployeeForm(props) {
   }
 
   useEffect(() => {
-    if (recordsForEdit != '') {
+    if (recordsForEdit !== null) {
       setValues({
         ...recordsForEdit
       })
@@ -125,7 +125,7 @@ function EmployeeForm(props) {
                   label="Department"
                   value={values.departmentId}
                   onChange={handleInputChange}
-                  options={empService.getDepatmentCollection()}
+                  options={empService.getDepartmentCollection()}
                   error={errors.departmentId}
                   />
                   <Controls.CheckGroup 
